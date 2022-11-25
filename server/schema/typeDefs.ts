@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+import { gql } from 'apollo-server-express';
 
 const typeDefs = gql`
     ## Types ##
@@ -19,10 +19,16 @@ const typeDefs = gql`
 
     ## Queries ##
     type Query {
-        getAllItems: [Item]!
+        getAllItems: [Item]!,
+        getUser: User!
     }
 
     ## Mutations ##
+    type Mutation {
+        createItem(name: String!, amount: Float!, dueDate: String!, hasAutoDraft: Boolean!): Item!,
+        createUser(name: String!, occupation: String!, income: Float!): User!
+
+    }
 `
 
 module.exports = { typeDefs };
