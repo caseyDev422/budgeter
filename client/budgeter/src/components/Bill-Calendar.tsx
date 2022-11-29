@@ -1,19 +1,35 @@
 import {
     Box,
-    TextField
+    TextField,
+    TextFieldProps
 } from '@mui/material';
 import { useState } from 'react';
-const moment = require('moment');
+import { LocalizationProvider, StaticDatePicker } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import startOfToday from 'date-fns/startOfToday';
+
 
 function BillCalendar() {
-    let now = moment().format('LLLL');
-
-    const [value, setValue] = useState(new Date());
-    return(
-        <Box sx={{width: 'fit-content'}}>
-            {now}
-        </Box>
-    )
+    const today = startOfToday();
+    const [value, setValue] = useState<Date>(today);
+    const handleDate = (event: Date | null) => {
+        console.log('event', event);
+    }
+    return (
+      <Box>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <StaticDatePicker
+            displayStaticWrapperAs="desktop"
+            value={value}
+            onChange={handleDate}
+            renderInput={(params) => <TextField {...params} />}
+            dayOfWeekFormatter={(day) => `${day}.`}
+            toolbarFormat="MM/dd/yyyy"
+            showToolbar
+          />
+        </LocalizationProvider>
+      </Box>
+    );
 }
 
 export default BillCalendar;
