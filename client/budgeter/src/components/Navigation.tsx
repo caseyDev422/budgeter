@@ -12,10 +12,14 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { View } from '../Models/enums/Views';
 import { useState } from 'react';
 
-function Navigation() {
+function Navigation(props: any) {
     const [view, setView] = useState(View.MONTHLY);
     const handleView = (event: SelectChangeEvent) => {
         setView(event.target.value as View);
+    }
+
+    const handleAddButton = (data: any) => {
+      props.addBill(true);
     }
     return (
       <Drawer open={true} variant="permanent" anchor="left">
@@ -24,7 +28,7 @@ function Navigation() {
           <Typography variant="h6" component="div" style={{marginRight: '47px'}}>
             Current View: {View.MONTHLY}
           </Typography>
-          <Button variant="outlined" style={{ margin: '25% 52% 25% 0' }}>
+          <Button variant="outlined" style={{ margin: '25% 52% 25% 0' }} onClick={handleAddButton}>
             <AttachMoneyIcon color="success" /> Add Bill
           </Button>
           <FormControl fullWidth>

@@ -11,8 +11,9 @@ import startOfToday from 'date-fns/startOfToday';
 
 function BillCalendar() {
     const today = startOfToday();
-    const [value, setValue] = useState<Date>(today);
+    const [value, setValue] = useState<Date | null>(today);
     const handleDate = (event: Date | null) => {
+        setValue(event);
         console.log('event', event);
     }
     return (
