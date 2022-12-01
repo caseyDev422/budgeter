@@ -7,6 +7,7 @@ import BillForm from './BillForm';
 import Grid from '@mui/material/Unstable_Grid2';
 
 function App() {
+  //TODO refactor to use useState
   const [isOpen, setIsOpen] = React.useState(false);
   return (
     <div className="App">
