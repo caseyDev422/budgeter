@@ -1,12 +1,8 @@
-import {
-    Box,
-    TextField,
-    TextFieldProps
-} from '@mui/material';
 import { useState } from 'react';
-import { LocalizationProvider, StaticDatePicker } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import  Box  from '@mui/material/Box';
 import startOfToday from 'date-fns/startOfToday';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
 
 
 function BillCalendar() {
@@ -18,17 +14,9 @@ function BillCalendar() {
     }
     return (
       <Box>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <StaticDatePicker
-            displayStaticWrapperAs="desktop"
-            value={value}
-            onChange={handleDate}
-            renderInput={(params) => <TextField {...params} />}
-            dayOfWeekFormatter={(day) => `${day}.`}
-            toolbarFormat="MM/dd/yyyy"
-            showToolbar
-          />
-        </LocalizationProvider>
+        <FullCalendar
+        plugins={[dayGridPlugin]}
+        />
       </Box>
     );
 }
