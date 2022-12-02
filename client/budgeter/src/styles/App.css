@@ -23,3 +23,13 @@
   width: 85vw;
   margin-left: 17.8rem;
 }
+
+.billForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.billForm-item {
+  padding: 0px 20px 40px 0px !important;
+  margin-top: 5px !important;
+}
