@@ -10,18 +10,13 @@ function App() {
   //TODO refactor to use useState
   const [isOpen, setIsOpen] = React.useState(false);
   return (
-    <div className="App">
+    <div>
       <Navigation addBill={setIsOpen}/>
-      <div className="items-container">
-        <Grid container spacing={2}>
-          <Grid>
-            <Bills />
-          </Grid>
-          <Grid>
-            <BillCalendar />
-          </Grid>
-        </Grid>
+      <div className="bill-container">
+        <Bills />
       </div>
+      
+      <BillCalendar />
       <BillForm isOpen={isOpen} handleOpen={setIsOpen} />
     </div>
   );
