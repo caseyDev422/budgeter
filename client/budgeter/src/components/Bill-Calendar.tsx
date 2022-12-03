@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import  Box  from '@mui/material/Box';
 import startOfToday from 'date-fns/startOfToday';
-import FullCalendar, { AllowFunc } from '@fullcalendar/react';
+import FullCalendar, { AllowFunc, CalendarOptions } from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -14,6 +14,11 @@ function BillCalendar() {
         setValue(event);
         console.log('event', event);
     }
+    const handleSelect: any = (e: { end: { getTime: () => number; }; start: { getTime: () => number; }; }) => {
+      console.log(new Date());
+      console.log('e', e);
+      return e.end.getTime() / 1000 - e.start.getTime() / 1000 <= 86400;
+    }
 
     return (
       <>
@@ -23,6 +28,7 @@ function BillCalendar() {
             height={"auto"}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             selectable={true}
+            selectAllow={handleSelect}
             eventConstraint={{
               start: '00:00',
               end: '24:00'

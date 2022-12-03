@@ -19,3 +19,15 @@
   padding: 0px 20px 40px 0px !important;
   margin-top: 5px !important;
 }
+
+.bill-error-text {
+  color: red;
+  position: absolute;
+  top: 125px;
+}
+
+.amount-error-text {
+  color: red;
+  position: absolute;
+  bottom: 140px;
+}
