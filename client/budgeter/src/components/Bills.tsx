@@ -11,7 +11,7 @@ function Bills() {
         amount: 123.45
     }
     return(
-        <Box sx={{width: 'fit-content', bgcolor: 'lightgray'}}>
+        <Box sx={{width: 'fit-content'}}>
             <List>
                 <ListItem>
                     <ListItemText primary={`Name: ${item.name} Amount: ${item.amount}`} />
