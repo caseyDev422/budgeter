@@ -1,3 +1,4 @@
+import { gql, useQuery } from '@apollo/client';
 import {
     Box,
     List,
@@ -6,15 +7,27 @@ import {
 } from '@mui/material';
 
 function Bills() {
-    const item = {
-        name: 'Item1',
-        amount: 123.45
-    }
+    const ITEMS = gql`
+        query GetAllItems {
+            getAllItems {
+                name
+                amount
+                dueDate
+                hasAutoDraft
+                id
+            }
+        }
+    `
+    const {loading, error, data} = useQuery(ITEMS);
+    if (loading) return(<div>Loading...</div>);
+    if (error) return(<div>Error!! {error.message}</div>);
     return(
         <Box sx={{width: 'fit-content'}}>
             <List>
                 <ListItem>
-                    <ListItemText primary={`Name: ${item.name} Amount: ${item.amount}`} />
+                    {data && data.getAllItems.map((item: any) => (
+                        <ListItemText primary={`Name: ${item.name} Amount: ${item.amount}`} />
+                    ))}
                 </ListItem>
             </List>
         </Box>

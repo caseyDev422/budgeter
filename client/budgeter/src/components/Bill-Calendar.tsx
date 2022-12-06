@@ -1,5 +1,3 @@
-import { useState } from 'react';
-import startOfToday from 'date-fns/startOfToday';
 import FullCalendar, {  } from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -7,16 +5,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import alllocales from '@fullcalendar/core/locales-all';
 
 function BillCalendar() {
-    const today = startOfToday();
-    const [value, setValue] = useState<Date | null>(today);
-    const handleDate = (event: Date | null) => {
-        setValue(event);
-        console.log('event', event);
-    }
     const handleSelect: any = (e: any) => {
-      console.log(new Date());
-      
-      console.log('e', );
       return e.end.getTime() / 1000 - e.start.getTime() / 1000 <= 86400;
     }
 

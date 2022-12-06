@@ -31,3 +31,8 @@
   position: absolute;
   bottom: 140px;
 }
+
+/*used for item list*/
+.MuiListItem-root {
+  flex-direction: column !important;
+}
