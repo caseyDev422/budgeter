@@ -19,6 +19,7 @@ function Bills() {
         }
     `
     const {loading, error, data} = useQuery(ITEMS);
+    // TODO show loading symbol instead of text
     if (loading) return(<div>Loading...</div>);
     if (error) return(<div>Error!! {error.message}</div>);
     return(
