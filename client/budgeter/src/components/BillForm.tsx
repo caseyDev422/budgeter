@@ -12,10 +12,20 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { Formik, Form, Field } from "formik";
 import { NumericFormat } from "react-number-format";
 import * as yup from "yup";
-
 import { Bill } from "../Models/Bill";
+import { useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { CREATE_ITEM, GET_ITEMS } from "../Queries/itemQueries";
 
 function BillForm(props: any) {
+  const [dueDate, setDueDate] = useState<Date | null>(new Date());
+  const [createItem, {data, loading, error}] = useMutation(CREATE_ITEM, {
+    refetchQueries: [
+      {query: GET_ITEMS},
+      'getAllItems'
+    ]
+  });
+
   const validation = yup.object({
     billName: yup.string().required("Must include a bill name").max(20),
     amount: yup.string().required("Must enter an amount"),
@@ -27,7 +37,15 @@ function BillForm(props: any) {
       ? (formValues.hasAutoDraft = true)
       : (formValues.hasAutoDraft = false);
     delete formValues.picked;
+    if (dueDate?.toString() !== formValues.dueDate) {
+      formValues.dueDate = dueDate?.toString()!;
+    }
+    const formattedAmount = formValues.amount.slice(1);
+    formValues.amount = +formattedAmount;
     console.log("formValues", formValues);
+    createItem({variables: formValues});
+    setDueDate(new Date());
+    props.handleOpen(false);
   };
   return (
     <div>
@@ -72,14 +90,18 @@ function BillForm(props: any) {
                         <DatePicker
                           className="billForm-item"
                           label="Due Date"
-                          value={values.dueDate}
-                          onChange={handleChange}
+                          value={dueDate}
+                          onChange={setDueDate}
                           renderInput={(params) => <TextField {...params} />}
                         />
                       </LocalizationProvider>
                     )}
                   />
+                  {touched.dueDate ? (
+                    <small className="amount-error-text">{errors.dueDate}</small>
+                  ) : null}
                   <Field
+                    
                     render={() => (
                       <NumericFormat
                         label="Amount"
@@ -110,7 +132,9 @@ function BillForm(props: any) {
                     </label>
                   </div>
                   <DialogActions>
-                    <Button onClick={() => props.handleOpen(false)}>
+                    <Button onClick={() => {
+                      setDueDate(new Date());
+                      props.handleOpen(false)}}>
                       Cancel
                     </Button>
                     <Button type="submit">Submit</Button>
@@ -123,6 +147,21 @@ function BillForm(props: any) {
       </Dialog>
     </div>
   );
+}
+
+const nameField = (props: any) => {
+  <NumericFormat
+    label="Amount"
+    className="billForm-item"
+    name="amount"
+    prefix="$"
+    type="text"
+    customInput={TextField}
+    allowNegative={false}
+    value={props.values.amount}
+    thousandSeparator={true}
+    onChange={props.handleChange}
+  />;
 }
 
 export default BillForm;
