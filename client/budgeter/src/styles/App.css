@@ -10,6 +10,12 @@
   padding-left: 25%;
 }
 
+.item-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
 .billForm {
   display: flex;
   flex-direction: column;

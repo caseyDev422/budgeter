@@ -5,6 +5,8 @@ import {
     ListItem,
     ListItemText
 } from '@mui/material';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { GET_ITEMS } from '../Queries/itemQueries';
 
 function Bills() {
@@ -18,8 +20,12 @@ function Bills() {
         <Box sx={{width: 'fit-content'}}>
             <List>
                 <ListItem>
-                    {data && data.getAllItems.map((item: any) => (
-                        <ListItemText key={item.id} primary={`Name: ${item.billName} Amount: ${item.amount}`} />
+                    {data && data.getAllItems.map((item: any, index: number) => (
+                        <div className='item-container' key={item.id}>
+                            <ListItemText primary={`Name: ${item.billName} Amount: ${item.amount}`} /> 
+                            <ModeEditIcon/> <DeleteIcon />
+                        </div>
+                        
                     ))}
                 </ListItem>
             </List>
