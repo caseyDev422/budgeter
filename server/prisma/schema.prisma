@@ -9,17 +9,17 @@ datasource db {
 
 model item {
   id           Int     @id @default(autoincrement())
-  name         String
+  billName     String
   amount       Float
   dueDate      String
   hasAutoDraft Boolean
 }
 
 model user {
-  id           Int      @id @default(autoincrement())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime
-  name         String
-  occupation   String
-  income       Float
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  name       String
+  occupation String
+  income     Float
 }

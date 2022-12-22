@@ -1,7 +1,7 @@
 export interface Item {
     id: string;
-    name: string;
-    amount: number;
+    billName: string;
+    amount: any;
     dueDate: string;
     hasAutoDraft: boolean;
 }
