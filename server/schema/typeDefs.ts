@@ -27,7 +27,7 @@ const typeDefs = gql`
     type Mutation {
         createItem(billName: String!, amount: Float!, dueDate: String!, hasAutoDraft: Boolean!): Item!,
         updateItem(id: ID!, billName: String, amount: Float, dueDate: String, hasAutoDraft: Boolean): Item,
-        deleteItem(id: ID): String!
+        deleteItem(id: ID!): String!
         createUser(name: String!, occupation: String!, income: Float!): User!
 
     }
