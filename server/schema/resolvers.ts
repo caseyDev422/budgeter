@@ -21,43 +21,37 @@ export const resolvers = {
 
         async updateItem(parent: any, args: any) {
             console.log(args);
-            let updatedItem: Item = {
-                id: '',
-                billName: '',
-                dueDate: '',
-                hasAutoDraft: null,
-                amount: '',
-            }
-            updatedItem.id = args.id;
-            const id = parseInt(args.id);
+            let updatedItem = new Item(args.id, '', '', '', null);
+            const id = parseInt(updatedItem.id);
             const item = await prisma.item.findUnique({
                 where: {
                     id
                 }
-            });
-            console.log(item);
-            for(const prop in args) {
-                if(Object(item).hasOwnProperty(prop)) {
-                    if(prop !== 'id') {
-                        console.log('contains ' + prop);
+            }) as unknown as Item;
+            for (const prop in item) {
+                if (prop !== 'id') {
+                    if(Object(args).hasOwnProperty(prop)) {
                         updatedItem[prop] = args[prop];
-                        console.log(item[prop]);
+                    } else {
+                        updatedItem[prop] = item[prop]
                     }
-                    
-                } else {
-                    updatedItem[prop] = item[prop];
                 }
+                
             };
-            console.log('updatedItem', updatedItem);
-            // const id = parseInt(args.id);
-            // const updatedItem = prisma.item.update({
-            //     where: {
-            //         id
-            //     },
-            //     data: {
+            const updated = await prisma.item.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    id: parseInt(updatedItem.id),
+                    billName: updatedItem.billName,
+                    amount: updatedItem.amount,
+                    dueDate: updatedItem.dueDate,
+                    hasAutoDraft: updatedItem.hasAutoDraft
+                }
+            });
 
-            //     }
-            // });
+            return updatedItem;
         },
 
         deleteItem(parent: any, args: any) {
