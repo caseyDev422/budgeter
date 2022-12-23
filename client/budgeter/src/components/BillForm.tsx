@@ -14,8 +14,9 @@ import { NumericFormat } from "react-number-format";
 import * as yup from "yup";
 import { Bill } from "../Models/Bill";
 import { useState } from "react";
-import { useMutation, useQuery } from "@apollo/client";
-import { CREATE_ITEM, GET_ITEMS } from "../Queries/itemQueries";
+import { useMutation } from "@apollo/client";
+import { GET_ITEMS } from "../Query/itemQueries";
+import { CREATE_ITEM } from "../Mutation/itemMutations";
 
 function BillForm(props: any) {
   const [dueDate, setDueDate] = useState<Date | null>(new Date());

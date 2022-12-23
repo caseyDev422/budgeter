@@ -7,9 +7,9 @@ import {
 } from '@mui/material';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { GET_ITEMS } from '../Queries/itemQueries';
+import { GET_ITEMS } from '../Query/itemQueries';
 
-function Bills() {
+function Bills(props: any) {
     const {loading, error, data} = useQuery(GET_ITEMS, {
         notifyOnNetworkStatusChange: true,
     });
@@ -20,13 +20,18 @@ function Bills() {
         <Box sx={{width: 'fit-content'}}>
             <List>
                 <ListItem>
-                    {data && data.getAllItems.map((item: any, index: number) => (
+                    
+                    {data.getAllItems.length > 0 ? data.getAllItems.map((item: any, index: number) => (
                         <div className='item-container' key={item.id}>
                             <ListItemText primary={`Name: ${item.billName} Amount: ${item.amount}`} /> 
-                            <ModeEditIcon/> <DeleteIcon />
+                            <ModeEditIcon/> <DeleteIcon onClick={() => {
+                                props.openPopup(true) 
+                                props.setItem(item)
+                                }} />
                         </div>
                         
-                    ))}
+                    )) : `You need to add bills for the month!`}
+                    
                 </ListItem>
             </List>
         </Box>

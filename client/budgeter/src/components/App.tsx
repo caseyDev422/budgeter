@@ -1,22 +1,26 @@
 import '../styles/App.css';
-import * as React from 'react';
+import { useState } from 'react';
 import Navigation  from './Navigation';
 import Bills from './Bills';
 import BillCalendar from './Bill-Calendar';
 import BillForm from './BillForm';
+import Popup from './Popup';
+import { Bill } from '../Models/Bill';
 
 function App() {
-  //TODO refactor to use useState
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [popupOpen, setPopup] = useState(false);
+  const [item, setItem] = useState<Bill | null>(null);
   return (
     <div>
       <Navigation addBill={setIsOpen}/>
       <div className="bill-container">
-        <Bills />
+        <Bills setItem={setItem} openPopup={setPopup}/>
       </div>
       
       <BillCalendar />
       <BillForm isOpen={isOpen} handleOpen={setIsOpen} />
+      <Popup item={item} isPopupOpen={popupOpen} openPopup={setPopup} />
     </div>
   );
 }

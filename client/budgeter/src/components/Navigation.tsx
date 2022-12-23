@@ -1,16 +1,8 @@
 import { 
     Drawer,
-    InputLabel,
-    MenuItem,
-    FormControl,
-    Select,
-    SelectChangeEvent,
     Box, 
-    Typography, 
     Button } from '@mui/material';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import { View } from '../Models/enums/Views';
-import { useState } from 'react';
 
 function Navigation(props: any) {
     const handleAddButton = (data: any) => {

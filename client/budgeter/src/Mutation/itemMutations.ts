@@ -1,16 +1,4 @@
-import { gql } from "@apollo/client"
-
-export const GET_ITEMS = gql`
-query GetAllItems {
-    getAllItems {
-        billName
-        amount
-        dueDate
-        hasAutoDraft
-        id
-    }
-}
-`;
+import { gql } from "@apollo/client";
 
 export const CREATE_ITEM = gql`
     mutation($billName: String!, $amount: Float!, $dueDate: String!, $hasAutoDraft: Boolean!) {
@@ -18,5 +6,11 @@ export const CREATE_ITEM = gql`
             id
             billName
         }
+    }
+`;
+
+export const DELETE_ITEM = gql`
+    mutation($id: ID!) {
+        deleteItem(id: $id)
     }
 `;
