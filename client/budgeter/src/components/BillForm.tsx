@@ -9,7 +9,7 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Formik, Form, Field } from "formik";
+import { useFormik } from "formik";
 import { NumericFormat } from "react-number-format";
 import * as yup from "yup";
 import { Bill } from "../Models/Bill";
@@ -20,17 +20,11 @@ import { CREATE_ITEM } from "../Mutation/itemMutations";
 
 function BillForm(props: any) {
   const [dueDate, setDueDate] = useState<Date | null>(new Date());
-  const [createItem, {data, loading, error}] = useMutation(CREATE_ITEM, {
+  const [createItem] = useMutation(CREATE_ITEM, {
     refetchQueries: [
       {query: GET_ITEMS},
       'getAllItems'
     ]
-  });
-
-  const validation = yup.object({
-    billName: yup.string().required("Must include a bill name").max(20),
-    amount: yup.string().required("Must enter an amount"),
-    dueDate: yup.string().required("Please enter a due date"),
   });
 
   const handleFormSubmit = (formValues: Bill) => {
@@ -48,6 +42,25 @@ function BillForm(props: any) {
     setDueDate(new Date());
     props.handleOpen(false);
   };
+
+  const validation = yup.object({
+    billName: yup.string().required("Must include a bill name").max(20),
+    amount: yup.string().required("Must enter an amount"),
+    dueDate: yup.date().required("Please enter a due date"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      billName: "",
+      amount: "",
+      hasAutoDraft: false,
+      picked: "",
+      dueDate: new Date().toString(),
+    },
+    validationSchema: validation,
+    onSubmit: (values: Bill) => handleFormSubmit(values)
+  });
+  
   return (
     <div>
       <Dialog
@@ -55,114 +68,78 @@ function BillForm(props: any) {
         aria-labelledby="dialog-title"
         aria-describedby="dialog-description"
       >
-        <DialogTitle>Add a Bill</DialogTitle>
+        <DialogTitle>{props.isEditable ? "Edit" : "Add"} Bill</DialogTitle>
         <DialogContent>
-          <Formik
-            initialValues={{
-              billName: "",
-              amount: "",
-              hasAutoDraft: false,
-              picked: "",
-              dueDate: new Date().toString(),
-            }}
-            validationSchema={validation}
-            onSubmit={(values: Bill) => handleFormSubmit(values)}
-          >
-            {({ values, handleChange, errors, touched }) => (
-              <Form>
-                <div className="billForm">
-                  <Field
-                    render={() => (
-                      <TextField
-                        className="billForm-item"
-                        name="billName"
-                        label="Bill name"
-                        value={values.billName}
-                        onChange={handleChange}
-                      />
-                    )}
-                  />
-                  {errors.billName && touched.billName ? (
-                    <small className="bill-error-text">{errors.billName}</small>
+          <form onSubmit={formik.handleSubmit} className="billForm">
+            <TextField
+              className="billForm-item"
+              name="billName"
+              label="Bill name"
+              value={formik.values.billName}
+              onChange={formik.handleChange}
+              error={Boolean(formik.errors.billName) && formik.touched.billName}
+            />
+            {formik.errors.billName && formik.touched.billName ? (
+                    <small className="bill-error-text">{formik.errors.billName}</small>
                   ) : null}
-                  <Field
-                    render={() => (
-                      <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <DatePicker
-                          className="billForm-item"
-                          label="Due Date"
-                          value={dueDate}
-                          onChange={setDueDate}
-                          renderInput={(params) => <TextField {...params} />}
-                        />
-                      </LocalizationProvider>
-                    )}
-                  />
-                  {touched.dueDate ? (
-                    <small className="amount-error-text">{errors.dueDate}</small>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                className="billForm-item"
+                label="Due Date"
+                value={dueDate}
+                onChange={setDueDate}
+                renderInput={(params) => <TextField error={Boolean(formik.errors.dueDate) && formik.touched.dueDate} {...params} />}
+              />
+            </LocalizationProvider>
+            {formik.touched.dueDate ? (
+              <small className="amount-error-text">
+                {formik.errors.dueDate}
+              </small>
+            ) : null}
+            <NumericFormat
+              label="Amount"
+              className="billForm-item"
+              name="amount"
+              prefix="$"
+              type="text"
+              customInput={TextField}
+              allowNegative={false}
+              value={formik.values.amount}
+              thousandSeparator={true}
+              error={formik.touched.amount}
+              onChange={formik.handleChange}
+            />
+            {formik.touched.amount ? (
+                    <small className="amount-error-text">{formik.errors.amount}</small>
                   ) : null}
-                  <Field
-                    
-                    render={() => (
-                      <NumericFormat
-                        label="Amount"
-                        className="billForm-item"
-                        name="amount"
-                        prefix="$"
-                        type="text"
-                        customInput={TextField}
-                        allowNegative={false}
-                        value={values.amount}
-                        thousandSeparator={true}
-                        onChange={handleChange}
-                      />
-                    )}
-                  />
-                  {touched.amount ? (
-                    <small className="amount-error-text">{errors.amount}</small>
-                  ) : null}
-                  <div id="my-radio-group">Auto draft?</div>
-                  <div role="group" aria-labelledby="my-radio-group">
-                    <label>
-                      <Field type="radio" name="picked" value="Yes" />
-                      Yes
-                    </label>
-                    <label style={{ paddingLeft: "20px" }}>
-                      <Field type="radio" name="picked" value="No" />
-                      No
-                    </label>
-                  </div>
-                  <DialogActions>
-                    <Button onClick={() => {
-                      setDueDate(new Date());
-                      props.handleOpen(false)}}>
-                      Cancel
-                    </Button>
-                    <Button type="submit">Submit</Button>
-                  </DialogActions>
-                </div>
-              </Form>
-            )}
-          </Formik>
+            <div id="my-radio-group">Auto draft?</div>
+            <div role="group" aria-labelledby="my-radio-group">
+              <label>
+                <input type="radio" name="picked" value="Yes" />
+                Yes
+              </label>
+              <label style={{ paddingLeft: "20px" }}>
+                <input type="radio" name="picked" value="No" />
+                No
+              </label>
+            </div>
+            <DialogActions>
+              <Button
+                onClick={() => {
+                  formik.resetForm();
+                  setDueDate(new Date());
+                  props.handleOpen(false);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Submit</Button>
+            </DialogActions>
+          </form>
         </DialogContent>
       </Dialog>
     </div>
   );
-}
-
-const nameField = (props: any) => {
-  <NumericFormat
-    label="Amount"
-    className="billForm-item"
-    name="amount"
-    prefix="$"
-    type="text"
-    customInput={TextField}
-    allowNegative={false}
-    value={props.values.amount}
-    thousandSeparator={true}
-    onChange={props.handleChange}
-  />;
 }
 
 export default BillForm;

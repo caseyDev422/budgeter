@@ -11,13 +11,11 @@ function Popup(props: any) {
     
 
     const handleDelete = () => {
-        console.log(typeof props.item.id);
         const id = props.item.id;
-        console.log('id', id);
         deleteItem({variables: {id}});
         props.openPopup(false);
     }
-    const [deleteItem, {data, loading, error}] = useMutation(DELETE_ITEM, {
+    const [deleteItem] = useMutation(DELETE_ITEM, {
         refetchQueries: [
           {query: GET_ITEMS},
           'getAllItems'

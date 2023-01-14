@@ -24,7 +24,12 @@ function Bills(props: any) {
                     {data.getAllItems.length > 0 ? data.getAllItems.map((item: any, index: number) => (
                         <div className='item-container' key={item.id}>
                             <ListItemText primary={`Name: ${item.billName} Amount: ${item.amount}`} /> 
-                            <ModeEditIcon/> <DeleteIcon onClick={() => {
+                            <ModeEditIcon onClick={() => {
+                                props.setIsOpen(true)
+                                props.setIsEdit(true)
+                                props.setItem(item)
+                            }}/> 
+                            <DeleteIcon onClick={() => {
                                 props.openPopup(true) 
                                 props.setItem(item)
                                 }} />
