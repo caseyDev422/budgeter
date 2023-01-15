@@ -5,6 +5,9 @@ import {
   DialogActions,
   Button,
   TextField,
+  Checkbox,
+  FormGroup,
+  FormControlLabel
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -13,13 +16,14 @@ import { useFormik } from "formik";
 import { NumericFormat } from "react-number-format";
 import * as yup from "yup";
 import { Bill } from "../Models/Bill";
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useMutation } from "@apollo/client";
 import { GET_ITEMS } from "../Query/itemQueries";
 import { CREATE_ITEM, UPDATE_ITEM } from "../Mutation/itemMutations";
 
 function BillForm(props: any) {
   const [dueDate, setDueDate] = useState<Date | null>(new Date());
+  const [checked, setChecked] = useState<boolean>(false);
   const [createItem] = useMutation(CREATE_ITEM, {
     refetchQueries: [
       {query: GET_ITEMS},
@@ -42,7 +46,9 @@ function BillForm(props: any) {
     dueDate: new Date().toString(),
   }
 
+
   if (props.isEditable) {
+    console.log(props.item);
     initialValues = {...props.item};
   }
 
@@ -80,13 +86,6 @@ function BillForm(props: any) {
     validationSchema: validation,
     onSubmit: (values: Bill) => handleFormSubmit(values)
   });
-
-  // if(props.isEditable) {
-  //   formik.values.billName = props.item.billName;
-  //   formik.values.dueDate =  new Date(props.item.dueDate).toString();
-  //   formik.values.amount = props.item.amount;
-  //   formik.values.hasAutoDraft = props.item.hasAutoDraft;
-  // }
   
   return (
     <div>
@@ -139,17 +138,17 @@ function BillForm(props: any) {
             {formik.touched.amount ? (
                     <small className="amount-error-text">{formik.errors.amount}</small>
                   ) : null}
-            <div id="my-radio-group">Auto draft?</div>
-            <div role="group" aria-labelledby="my-radio-group">
-              <label>
-                <input type="radio" name="picked" value="Yes"  onChange={formik.handleChange}/>
-                Yes
-              </label>
-              <label style={{ paddingLeft: "20px" }}>
-                <input type="radio" name="picked" value="No"  onChange={formik.handleChange}/>
-                No
-              </label>
-            </div>
+            <FormGroup>
+              <FormControlLabel control={
+                <Checkbox
+                  checked={checked}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    //formik.values.hasAutoDraft = e.target.checked;
+                    setChecked(e.target.checked);
+                  }}
+                />
+              } label="Auto Draft" />
+            </FormGroup>
             <DialogActions>
               <Button
                 onClick={() => {
