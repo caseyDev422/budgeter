@@ -16,13 +16,13 @@ function App() {
   const [item, setItem] = useState<Bill | null>(null);
   return (
     <div>
-      <Navigation addBill={setIsOpen}/>
+      <Navigation addBill={setIsOpen} isEditable={isEditable} setIsEdit={setIsEdit}/>
       <div className="bill-container">
         <Bills setItem={setItem} openPopup={setPopup} setIsOpen={setIsOpen} setIsEdit={setIsEdit}/>
       </div>
       
       <BillCalendar />
-      <BillForm isOpen={isOpen} handleOpen={setIsOpen} item={item}/>
+      <BillForm isOpen={isOpen} handleOpen={setIsOpen} setItem={setItem} item={item} setIsEdit={setIsEdit} isEditable={isEditable}/>
       <Popup item={item} isPopupOpen={popupOpen} openPopup={setPopup} />
     </div>
   );

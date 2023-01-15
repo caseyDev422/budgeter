@@ -3,10 +3,20 @@ import {
     Box, 
     Button } from '@mui/material';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import { Bill } from '../Models/Bill';
 
 function Navigation(props: any) {
+    const initialBill: Bill = {
+      billName: '',
+      amount: undefined,
+      hasAutoDraft: false,
+      dueDate: new Date().toString()
+    }
     const handleAddButton = (data: any) => {
       props.addBill(true);
+      if(props.isEditable) {
+        props.setIsEdit(false);
+      }
     }
     return (
       <Drawer open={true} variant="permanent" anchor="left">

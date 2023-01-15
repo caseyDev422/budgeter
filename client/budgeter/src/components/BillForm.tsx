@@ -16,7 +16,7 @@ import { Bill } from "../Models/Bill";
 import { useState } from "react";
 import { useMutation } from "@apollo/client";
 import { GET_ITEMS } from "../Query/itemQueries";
-import { CREATE_ITEM } from "../Mutation/itemMutations";
+import { CREATE_ITEM, UPDATE_ITEM } from "../Mutation/itemMutations";
 
 function BillForm(props: any) {
   const [dueDate, setDueDate] = useState<Date | null>(new Date());
@@ -26,20 +26,45 @@ function BillForm(props: any) {
       'getAllItems'
     ]
   });
+  const [updateItem] = useMutation(UPDATE_ITEM, {
+    refetchQueries: [
+      { query: GET_ITEMS},
+      'getAllItems'
+    ]
+  })
+
+
+  let initialValues = {
+    billName: "",
+    amount: "",
+    hasAutoDraft: false,
+    picked: "",
+    dueDate: new Date().toString(),
+  }
+
+  if (props.isEditable) {
+    initialValues = {...props.item};
+  }
 
   const handleFormSubmit = (formValues: Bill) => {
-    formValues.picked === "Yes"
-      ? (formValues.hasAutoDraft = true)
-      : (formValues.hasAutoDraft = false);
-    delete formValues.picked;
-    if (dueDate?.toString() !== formValues.dueDate) {
-      formValues.dueDate = dueDate?.toString()!;
+    
+    if (props.isEditable) {
+      console.log('formValues', formValues);
+    //  updateItem({ variables: formValues});
+    } else {
+      formValues.picked === "Yes"
+        ? (formValues.hasAutoDraft = true)
+        : (formValues.hasAutoDraft = false);
+      delete formValues.picked;
+      if (dueDate?.toString() !== formValues.dueDate) {
+        formValues.dueDate = dueDate?.toString()!;
+      }
+      const formattedAmount = formValues.amount.slice(1);
+      formValues.amount = +formattedAmount;
+      createItem({ variables: formValues });
+      setDueDate(new Date());
     }
-    const formattedAmount = formValues.amount.slice(1);
-    formValues.amount = +formattedAmount;
-    console.log("formValues", formValues);
-    createItem({variables: formValues});
-    setDueDate(new Date());
+    formik.resetForm();
     props.handleOpen(false);
   };
 
@@ -49,17 +74,19 @@ function BillForm(props: any) {
     dueDate: yup.date().required("Please enter a due date"),
   });
 
-  const formik = useFormik({
-    initialValues: {
-      billName: "",
-      amount: "",
-      hasAutoDraft: false,
-      picked: "",
-      dueDate: new Date().toString(),
-    },
+  let formik = useFormik({
+    initialValues,
+    enableReinitialize: true,
     validationSchema: validation,
     onSubmit: (values: Bill) => handleFormSubmit(values)
   });
+
+  // if(props.isEditable) {
+  //   formik.values.billName = props.item.billName;
+  //   formik.values.dueDate =  new Date(props.item.dueDate).toString();
+  //   formik.values.amount = props.item.amount;
+  //   formik.values.hasAutoDraft = props.item.hasAutoDraft;
+  // }
   
   return (
     <div>
@@ -86,7 +113,7 @@ function BillForm(props: any) {
               <DatePicker
                 className="billForm-item"
                 label="Due Date"
-                value={dueDate}
+                value={formik.values.dueDate}
                 onChange={setDueDate}
                 renderInput={(params) => <TextField error={Boolean(formik.errors.dueDate) && formik.touched.dueDate} {...params} />}
               />
@@ -115,11 +142,11 @@ function BillForm(props: any) {
             <div id="my-radio-group">Auto draft?</div>
             <div role="group" aria-labelledby="my-radio-group">
               <label>
-                <input type="radio" name="picked" value="Yes" />
+                <input type="radio" name="picked" value="Yes"  onChange={formik.handleChange}/>
                 Yes
               </label>
               <label style={{ paddingLeft: "20px" }}>
-                <input type="radio" name="picked" value="No" />
+                <input type="radio" name="picked" value="No"  onChange={formik.handleChange}/>
                 No
               </label>
             </div>
@@ -127,7 +154,10 @@ function BillForm(props: any) {
               <Button
                 onClick={() => {
                   formik.resetForm();
+                  formik.setValues(initialValues);
                   setDueDate(new Date());
+                  props.setIsEdit(false);
+                  props.setItem(null);
                   props.handleOpen(false);
                 }}
               >
