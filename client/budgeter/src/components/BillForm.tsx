@@ -82,7 +82,6 @@ function BillForm(props: any) {
 
   let formik = useFormik({
     initialValues,
-    enableReinitialize: true,
     validationSchema: validation,
     onSubmit: (values: Bill) => handleFormSubmit(values)
   });
@@ -143,7 +142,6 @@ function BillForm(props: any) {
                 <Checkbox
                   checked={checked}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    //formik.values.hasAutoDraft = e.target.checked;
                     setChecked(e.target.checked);
                   }}
                 />
