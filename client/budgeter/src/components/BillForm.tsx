@@ -12,7 +12,7 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useFormik } from "formik";
+import { Formik, FormikErrors, FormikHandlers, useFormik } from "formik";
 import { NumericFormat } from "react-number-format";
 import * as yup from "yup";
 import { Bill } from "../Models/Bill";
@@ -21,7 +21,8 @@ import { useMutation } from "@apollo/client";
 import { GET_ITEMS } from "../Query/itemQueries";
 import { CREATE_ITEM, UPDATE_ITEM } from "../Mutation/itemMutations";
 
-function BillForm(props: any) {
+function BillForm(formProps: any) {
+  console.log('isEditable', formProps.isEditable);
   const [dueDate, setDueDate] = useState<Date | null>(new Date());
   const [checked, setChecked] = useState<boolean>(false);
   const [createItem] = useMutation(CREATE_ITEM, {
@@ -46,15 +47,9 @@ function BillForm(props: any) {
     dueDate: new Date().toString(),
   }
 
-
-  if (props.isEditable) {
-    console.log(props.item);
-    initialValues = {...props.item};
-  }
-
   const handleFormSubmit = (formValues: Bill) => {
     
-    if (props.isEditable) {
+    if (formProps.isEditable) {
       console.log('formValues', formValues);
     //  updateItem({ variables: formValues});
     } else {
@@ -70,8 +65,8 @@ function BillForm(props: any) {
       createItem({ variables: formValues });
       setDueDate(new Date());
     }
-    formik.resetForm();
-    props.handleOpen(false);
+   // formik.resetForm();
+    formProps.handleOpen(false);
   };
 
   const validation = yup.object({
@@ -80,29 +75,104 @@ function BillForm(props: any) {
     dueDate: yup.date().required("Please enter a due date"),
   });
 
-  let formik = useFormik({
-    initialValues,
-    validationSchema: validation,
-    onSubmit: (values: Bill) => handleFormSubmit(values)
-  });
+  console.log('FORMPROP', formProps);
   
   return (
     <div>
       <Dialog
-        open={props.isOpen}
+        open={formProps.isOpen}
         aria-labelledby="dialog-title"
         aria-describedby="dialog-description"
       >
-        <DialogTitle>{props.isEditable ? "Edit" : "Add"} Bill</DialogTitle>
+        <DialogTitle>{formProps.isEditable ? "Edit" : "Add"} Bill</DialogTitle>
         <DialogContent>
-          <form onSubmit={formik.handleSubmit} className="billForm">
+          <Formik
+            initialValues={initialValues || formProps.item}
+            enableReinitialize
+            validationSchema={validation}
+            onSubmit={(values: Bill, actions) => {
+              handleFormSubmit(values)
+            }}
+          >
+            {props => (
+              <form onSubmit={props.handleSubmit} className="billForm">
+                <TextField
+                  className="billForm-item"
+                  name="billName"
+                  label="Bill name"
+                  value={props.values.billName}
+                  onChange={props.handleChange}
+                />
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <DatePicker
+                    className="billForm-item"
+                    label="Due Date"
+                    value={props.values.dueDate}
+                    onChange={setDueDate}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
+                <NumericFormat
+                  label="Amount"
+                  className="billForm-item"
+                  name="amount"
+                  prefix="$"
+                  type="text"
+                  customInput={TextField}
+                  allowNegative={false}
+                  value={props.values.amount}
+                  thousandSeparator={true}
+                  error={Boolean(props.touched.amount)}
+                  onChange={props.handleChange}
+                />
+
+                <FormGroup>
+                  <FormControlLabel control={
+                    <Checkbox
+                      checked={checked}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        setChecked(e.target.checked);
+                        // props.values.hasAutoDraft = checked;
+                        // console.log(props.values.hasAutoDraft);
+                        
+                      }}
+                    />
+                  } label="Auto Draft" />
+                </FormGroup>
+
+                <DialogActions>
+              <Button
+                onClick={() => {
+                  console.log('cancel initialValues', initialValues);
+                  props.resetForm();
+                  props.setValues({
+                    billName: '',
+                    amount: '',
+                    dueDate: new Date().toString(),
+                    picked: '',
+                    hasAutoDraft: false
+                  });
+                  setDueDate(new Date());
+                  formProps.setIsEdit(false);
+                  formProps.setItem(null);
+                  formProps.handleOpen(false);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Submit</Button>
+            </DialogActions>
+              </form>
+            )}
+          </Formik>
+          {/* <form onSubmit={formik.handleSubmit} className="billForm">
             <TextField
               className="billForm-item"
               name="billName"
               label="Bill name"
-              value={formik.values.billName}
-              onChange={formik.handleChange}
-              error={Boolean(formik.errors.billName) && formik.touched.billName}
+            //  value={formik.values.billName}
+            //  onChange={formik.handleChange}
+            //  error={Boolean(formik.errors.billName) && formik.touched.billName}
             />
             {formik.errors.billName && formik.touched.billName ? (
                     <small className="bill-error-text">{formik.errors.billName}</small>
@@ -150,8 +220,15 @@ function BillForm(props: any) {
             <DialogActions>
               <Button
                 onClick={() => {
+                  console.log('cancel initialValues', initialValues);
                   formik.resetForm();
-                  formik.setValues(initialValues);
+                  formik.setValues({
+                    billName: '',
+                    amount: '',
+                    dueDate: new Date().toString(),
+                    picked: '',
+                    hasAutoDraft: false
+                  });
                   setDueDate(new Date());
                   props.setIsEdit(false);
                   props.setItem(null);
@@ -162,7 +239,7 @@ function BillForm(props: any) {
               </Button>
               <Button type="submit">Submit</Button>
             </DialogActions>
-          </form>
+          </form> */}
         </DialogContent>
       </Dialog>
     </div>

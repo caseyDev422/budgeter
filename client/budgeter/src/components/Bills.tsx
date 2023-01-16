@@ -12,6 +12,7 @@ import { GET_ITEMS } from '../Query/itemQueries';
 function Bills(props: any) {
     const {loading, error, data} = useQuery(GET_ITEMS, {
         notifyOnNetworkStatusChange: true,
+        pollInterval: 5000
     });
     // TODO show loading symbol instead of text
     if (loading) return(<div>Loading...</div>);
