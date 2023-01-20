@@ -11,11 +11,14 @@ export const CREATE_ITEM = gql`
 
 export const UPDATE_ITEM = gql`
     mutation($id: ID!, $billName: String, $amount: Float, $dueDate: String, $hasAutoDraft: Boolean) {
-        id
-        billName
-        amount
-        dueDate
-        hasAutoDraft
+        updateItem(id: $id, billName: $billName, amount: $amount, dueDate: $dueDate, hasAutoDraft: $hasAutoDraft) {
+            id
+            billName
+            amount
+            dueDate
+            hasAutoDraft
+        }
+
     }
 `;
 

@@ -20,6 +20,7 @@ const typeDefs = gql`
     ## Queries ##
     type Query {
         getAllItems: [Item]!,
+        getItem(id: ID): Item!,
         getUser: User!
     }
 

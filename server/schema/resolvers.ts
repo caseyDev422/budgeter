@@ -8,6 +8,17 @@ export const resolvers = {
             const allItems = prisma.item.findMany();
             return allItems;
         },
+
+        async getItem(parent, args) {
+            console.log(args);
+            const id = parseInt(args.id);
+            const item = await  prisma.item.findUnique({
+                where: {
+                    id
+                }
+            }) as unknown as Item;
+            return item;
+        }
     },
 
     // TODO implement error handling

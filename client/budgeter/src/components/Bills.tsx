@@ -29,6 +29,7 @@ function Bills(props: any) {
                                 props.setIsOpen(true)
                                 props.setIsEdit(true)
                                 props.setItem(item)
+                                
                             }}/> 
                             <DeleteIcon onClick={() => {
                                 props.openPopup(true) 

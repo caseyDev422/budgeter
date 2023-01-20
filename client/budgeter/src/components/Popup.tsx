@@ -8,12 +8,19 @@ import { GET_ITEMS } from "../Query/itemQueries";
 import { useMutation } from "@apollo/client/react/hooks";
 
 function Popup(props: any) {
-    
 
     const handleDelete = () => {
         const id = props.item.id;
         deleteItem({variables: {id}});
+        props.setItem({
+          billName: '',
+          amount: '',
+          dueDate: new Date().toString(),
+          picked: '',
+          hasAutoDraft: false
+        })
         props.openPopup(false);
+
     }
     const [deleteItem] = useMutation(DELETE_ITEM, {
         refetchQueries: [
@@ -21,6 +28,7 @@ function Popup(props: any) {
           'getAllItems'
         ]
       });
+      
     return (
       <div>
         <Dialog

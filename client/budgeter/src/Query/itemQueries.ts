@@ -12,3 +12,14 @@ query GetAllItems {
 }
 `;
 
+export const GET_ITEM = gql`
+query GetItem($id: ID) {
+    getItem(id: $id) {
+        billName
+        amount
+        dueDate
+        hasAutoDraft
+        id
+    }
+}
+`
