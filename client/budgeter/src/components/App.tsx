@@ -26,14 +26,15 @@ function App() {
   const [isEditable, setIsEdit] = useState(false);
   const [popupOpen, setPopup] = useState(false);
   const [item, setItem] = useState<Bill>(initialValues);
+  const [calendarItems, setCalendarItems] = useState<any[]>([]);
   return (
     <div>
       <Navigation addBill={setIsOpen} isEditable={isEditable} setIsEdit={setIsEdit}/>
       <div className="bill-container">
-        <Bills setItem={setItem} openPopup={setPopup} setIsOpen={setIsOpen} setIsEdit={setIsEdit}/>
+        <Bills setItem={setItem} setCalendarItems={setCalendarItems} openPopup={setPopup} setIsOpen={setIsOpen} setIsEdit={setIsEdit}/>
       </div>
       
-      <BillCalendar />
+      <BillCalendar calendarItems={calendarItems} />
       <Suspense fallback={<div>Loading</div>}>
         <BillForm isOpen={isOpen} handleOpen={setIsOpen} setItem={setItem} item={item} setIsEdit={setIsEdit} isEditable={isEditable}/>
       </Suspense>
