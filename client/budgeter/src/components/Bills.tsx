@@ -8,12 +8,31 @@ import {
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { GET_ITEMS } from '../Query/itemQueries';
+import { useEffect } from 'react';
+import { CalendarEvent } from '../Models/CalendarEvent';
 
 function Bills(props: any) {
     const {loading, error, data} = useQuery(GET_ITEMS, {
         notifyOnNetworkStatusChange: true,
         pollInterval: 5000
     });
+
+    useEffect(() => {
+        if (data?.getAllItems) {
+            const calendarEvents: CalendarEvent[] = [];
+            for (const bill of data.getAllItems) {
+                const event: CalendarEvent = {
+                    id: bill.id,
+                    start: new Date(bill.dueDate).toISOString(),
+                    title: bill.billName,
+                }
+                calendarEvents.push(event);
+            }
+            props.setCalendarItems(calendarEvents);
+        }
+        
+        
+    }, [data])
     // TODO show loading symbol instead of text
     if (loading) return(<div>Loading...</div>);
     if (error) return(<div>Error!! {error.message}</div>);

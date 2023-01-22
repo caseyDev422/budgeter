@@ -17,33 +17,30 @@ import { NumericFormat } from "react-number-format";
 import * as yup from "yup";
 import { Bill } from "../Models/Bill";
 import { ChangeEvent, useState } from "react";
-import { throwServerError, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { GET_ITEMS } from "../Query/itemQueries";
 import { CREATE_ITEM, UPDATE_ITEM } from "../Mutation/itemMutations";
-import { useEffect } from "preact/hooks";
 
 function BillForm(formProps: any) {
   const [dueDate, setDueDate] = useState<Date | null>(new Date());
-  const [checked, setChecked] = useState<boolean>(false);
   const [createItem] = useMutation(CREATE_ITEM, {
     refetchQueries: [
       {query: GET_ITEMS},
       'getAllItems'
     ]
   });
+
   const [updateItem] = useMutation(UPDATE_ITEM, {
     refetchQueries: [
       { query: GET_ITEMS},
       'getAllItems'
     ]
   });
+  
 
   const handleFormSubmit = (formValues: Bill) => {
     if (formProps.isEditable) {
-      console.log('formValues', formValues);
       // TODO refactor into one fn
-      const formattedAmount = formValues.amount.slice(1);
-      formValues.amount = +formattedAmount;
       if (dueDate?.toString() !== formValues.dueDate) {
         formValues.dueDate = dueDate?.toString()!;
       }
@@ -98,7 +95,12 @@ function BillForm(formProps: any) {
                     className="billForm-item"
                     label="Due Date"
                     value={formikProps.values.dueDate}
-                    onChange={setDueDate}
+                    onChange={(e) => {
+                      formikProps.setFieldValue('dueDate', e);
+                      if(e) {
+                        setDueDate(new Date(e));
+                      }
+                    }}
                     renderInput={(params) => <TextField {...params} />}
                   />
                 </LocalizationProvider>
