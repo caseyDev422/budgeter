@@ -1,0 +1,22 @@
+version: '2.10.2'
+services:
+  frontend:
+    build: './client/budgeter'
+    ports:
+      - '3000:3000'
+  backend:
+    build: 'server/'
+    ports:
+      - '8080:8080'
+    env_file: /server/.env
+  db:
+    build: 'db/'
+    restart: always
+    ports:
+      - '3310:3310'
+    expose:
+      - '3310'
+    volumes:
+      - budgeter:/var/lib/mysql
+volumes:
+  budgeter:
