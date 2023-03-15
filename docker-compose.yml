@@ -2,15 +2,18 @@ version: '2.10.2'
 services:
   frontend:
     build: './client/budgeter'
+    image: seancasey94/budgeter/frontend:latest
     ports:
       - '3000:3000'
   backend:
     build: 'server/'
+    image: seancasey94/budgeter/backend:latest
     ports:
       - '8080:8080'
     env_file: /server/.env
   db:
     build: 'db/'
+    image: seancasey94/budgeter/db:latest
     restart: always
     ports:
       - '3310:3310'
