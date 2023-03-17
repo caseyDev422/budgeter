@@ -1,0 +1,75 @@
+version: 2.1
+
+orbs:
+  aws-ecr: circleci/aws-ecr@8.2.1
+  aws-ecs: circleci/aws-ecs@3.2.0
+  aws-cli: circleci/aws-cli@3.1.4
+
+workflows:
+  version: 2.
+  build_deploy:
+    jobs:
+      - build_client
+      - build_server
+      - deploy_client:
+          requires:
+            - build_client
+      - deploy_server:
+          requires:
+            - build_server
+
+jobs:
+  build_client:
+    docker:
+      - image: cimg/circleci/node:14
+    steps:
+      - checkout
+      - setup_remote_docker
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          region: AWS_REGION
+          repo: client
+          tag: '${CIRCLE_SHA1}'
+          path: client
+
+  build_server:
+    docker:
+      - image: cimg/circleci/node:14
+    steps:
+      - checkout
+      - setup_remote_docker
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          region: AWS_REGION
+          repo: server
+          tag: '${CIRCLE_SHA1}'
+          path: server
+
+  deploy_client:
+    docker:
+      - image: cimg/base
+    steps:
+      - checkout
+      - aws-cli/setup
+      - run:
+          name: Deploy client to S3 and CloudFront
+          command: |
+            # Set up AWS CLI and deploy the static files to S3
+            aws s3 sync client/build s3://your-bucket-name --delete
+            # Invalidate CloudFront cache
+            aws cloudfront create-invalidation --distribution-id your-distribution-id --paths "/*"
+
+  deploy_server:
+    docker:
+      - image: cimg/base
+    steps:
+      - aws-cli/setup
+      - aws-ecs/update_service:
+          family: your-task-definition-family
+          cluster-name: your-cluster-name
+          container-image-name-updates: "container=your-container-name,image-and-tag=${AWS_ECR_ACCOUNT_URL}/server:${CIRCLE_SHA1}"
+          verify-revision-is-deployed: true
