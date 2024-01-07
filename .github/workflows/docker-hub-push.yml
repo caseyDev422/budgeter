@@ -19,9 +19,10 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           cd client
-          docker build -t seancasey94/budgeter/client:latest ./budgeter
+          docker logout
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker push seancasey94/budgeter/client:latest
+          docker build -t seancasey94/budgeter:client ./budgeter
+          docker push seancasey94/budgeter:client
 
   build_server:
     runs-on: ubuntu-latest
@@ -36,9 +37,9 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           cd server
-          docker build -t seancasey94/budgeter/server:latest .
+          docker build -t seancasey94/budgeter:server .
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker push push seancasey94/budgeter/server:latest
+          docker push seancasey94/budgeter:server
 
   deploy_client:
     runs-on: ubuntu-latest
