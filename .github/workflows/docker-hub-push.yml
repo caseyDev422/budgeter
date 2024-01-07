@@ -19,7 +19,7 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           cd client
-          docker build -t seancasey94/budgeter/client:latest .
+          docker build -t seancasey94/budgeter/client:latest ./budgeter
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
           docker push seancasey94/budgeter/client:latest
 
