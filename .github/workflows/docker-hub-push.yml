@@ -6,29 +6,6 @@ on:
       - main # Adjust this to the branch you want to trigger the action
 
 jobs:
-  build_db:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Check if db/ directory has changed
-        id: db_changed
-        run: |
-          git diff-tree --name-only --no-commit-id ORIG_HEAD HEAD | grep -q '^db/'
-        continue-on-error: true
-
-      - name: Build and push database Docker image
-        if: steps.db_changed.outcome == 'success'  # Only execute if db/ directory has changed
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: |
-          cd db  # Navigate to the db directory where the Dockerfile is located
-          docker build -t seancasey94/budgeter/db:latest .
-          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker push seancasey94/budgeter/db:latest
-
   build_client:
     runs-on: ubuntu-latest
 
@@ -41,7 +18,8 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          docker build -t seancasey94/budgeter/client:latest ./client
+          cd client
+          docker build -t seancasey94/budgeter/client:latest .
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
           docker push seancasey94/budgeter/client:latest
 
@@ -57,7 +35,8 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          docker build -t seancasey94/budgeter/server:latest ./server
+          cd server
+          docker build -t seancasey94/budgeter/server:latest .
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
           docker push push seancasey94/budgeter/server:latest
 
